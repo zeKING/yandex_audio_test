@@ -5,7 +5,7 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from app.config import settings
-from app.exceptions import IncorrectEmailOrPassword, UserIsNotAdminException
+from app.users.exceptions import IncorrectEmailOrPassword, UserIsNotAdminException
 from app.users.auth_service import AuthService
 from app.users.dependencies import  get_admin
 

@@ -1,16 +1,14 @@
 from datetime import datetime
 
-from starlette.websockets import WebSocket
-
 from app.users.models import User
 from fastapi import Request, Depends
 from jose import jwt, JWTError
 
 from app.config import settings
-from app.exceptions import (
+from app.users.exceptions import (
     TokenExpiredException,
     IncorrectTokenException,
-    UserIsNotPresentException, UserIsNotAdminException, NotPermissionException, TokenAbsentException
+    UserIsNotPresentException, UserIsNotAdminException, TokenAbsentException
 )
 from functools import wraps
 

@@ -4,7 +4,7 @@ from jose import jwt, JWTError
 from passlib.context import CryptContext
 
 from app.config import settings
-from app.exceptions import IncorrectTokenException, TokenExpiredException, UserIsNotPresentException
+from app.users.exceptions import IncorrectTokenException, TokenExpiredException, UserIsNotPresentException
 from app.users.models import User
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

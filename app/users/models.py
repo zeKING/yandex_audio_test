@@ -1,17 +1,11 @@
 import datetime
 
-from pydantic import create_model
-
-from app.exceptions import ModelNotFoundException
 from app.repository.base import Base
-from app.database import async_session_maker
-from sqlalchemy import Column, String, DateTime, ForeignKey, select, JSON, func, Boolean, UniqueConstraint, insert, \
-    BigInteger, Date
-from sqlalchemy.orm import joinedload, Mapped
+from sqlalchemy import Column, String, DateTime, Boolean, Date
 
 from sqlalchemy.orm import relationship
-from app.audio.models import Audio
 
+from app.audio.models import Audio
 class User(Base):
 
     id = Column(String(length=20), primary_key=True) # т.к. с яндекса у id тип str

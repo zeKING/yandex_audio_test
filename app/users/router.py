@@ -1,22 +1,14 @@
-import base64
-import os
-import shutil
 from datetime import datetime, timedelta, timezone
-
-from secrets import token_hex
-from typing import List
 
 from starlette.requests import Request
 
 from app.config import settings
-from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPassword, TokenAbsentException
-from app.repository.tools import get_list_data
-from app.request import request
+from app.users.exceptions import TokenAbsentException
 from app.users.auth_service import AuthService
 from app.users.dependencies import get_current_user
 from app.users.models import User
-from app.users.schemas import SCurrentUser, SUserToken, SLogin
-from fastapi import APIRouter, Response, Depends, UploadFile, Form
+from app.users.schemas import SLogin, SUserToken, SCurrentUser
+from fastapi import APIRouter, Response, Depends
 
 from app.users.services import YandexAuthService, UserService
 
@@ -35,7 +27,7 @@ async def login():
 
     return {'auth_url': auth_url}
 
-@router.get("/verify-code")
+@router.get("/verify-code", response_model=SUserToken)
 async def verify_code(code: str, response: Response):
 
     yandex_access_token = await YandexAuthService.get_yandex_access_token(code)
@@ -55,7 +47,7 @@ async def verify_code(code: str, response: Response):
     return {"access_token": access_token}
 
 
-@router.post("/refresh-token")
+@router.post("/refresh-token", response_model=SUserToken)
 async def refresh_access_token(request: Request, response: Response):
     refresh_token = request.cookies.get('refresh_token')
     if refresh_token is None:
@@ -76,7 +68,7 @@ async def logout(response: Response):
     return {"detail": "success"}
 
 
-@router.get("/current-user")
+@router.get("/current-user", response_model=SCurrentUser)
 async def current_user(user: User = Depends(get_current_user)):
     return user
 

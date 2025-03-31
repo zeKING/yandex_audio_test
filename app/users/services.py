@@ -1,7 +1,7 @@
 import base64
 
 from app.config import settings
-from app.exceptions import YandexAPIError
+from app.users.exceptions import YandexAPIError
 from app.request import request
 from app.users.models import User
 

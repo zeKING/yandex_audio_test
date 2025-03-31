@@ -1,12 +1,12 @@
-from typing import Optional, List
+from typing import List
 
-from sqlalchemy import select, insert, delete, func, case, update, inspect, Case, BigInteger
+from sqlalchemy import select, insert, delete, func, update, BigInteger
 import inflect
 
 from app.database import async_session_maker
-from app.exceptions import ModelNotFoundException
+from app.users.exceptions import ModelNotFoundException
 from sqlalchemy.orm import DeclarativeBase, declared_attr, joinedload
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column
 
 
 class BaseRepository:

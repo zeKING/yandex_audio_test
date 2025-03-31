@@ -16,15 +16,19 @@ from pydantic import BaseModel
 class SCurrentUser(BaseModel):
     id: int
     email: str
+    login: str
+
     avatar_id: str | None
     avatar: str | None
     first_name: str | None
     last_name: str | None
+    gender: str | None
     phone: str | None
+
     last_login: datetime.datetime | None
     created_at: datetime.datetime
     is_active: bool
-
+    is_superuser: bool
 
     class Config:
         from_attributes = True

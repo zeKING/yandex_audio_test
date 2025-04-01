@@ -9,7 +9,8 @@ async def main():
 
     await User.get_or_create(filter=User.id == settings.SUPERUSER_ID,
                              id=settings.SUPERUSER_ID,
-                             email=settings.SUPERUSER_EMAIL
+                             email=settings.SUPERUSER_EMAIL,
+                             is_superuser=True
                              )
 
     os.makedirs('media', exist_ok=True)

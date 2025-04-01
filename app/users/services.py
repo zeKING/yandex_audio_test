@@ -1,9 +1,16 @@
 import base64
+import os
+import shutil
+from secrets import token_hex
+
+from sqlalchemy import and_
 
 from app.config import settings
-from app.users.exceptions import YandexAPIError
+from app.users.exceptions import YandexAPIError, CantDeleteSelfException
 from app.request import request
 from app.users.models import User
+from app.users.validators import validate_avatar_file
+from app.utils import convert_image_to_webp
 
 
 class YandexAuthService:
@@ -39,7 +46,7 @@ class YandexAuthService:
 
 
 class UserService:
-
+    AVATAR_MEDIA_FOLDER = 'media/users/avatars'
     @staticmethod
     async def save_user_data(user_data):
 
@@ -63,5 +70,50 @@ class UserService:
             }
             user = await User.create(**data)
 
-        print(user.id, user.email)
         return user
+
+    @staticmethod
+    async def delete_user(user_to_delete_id, user):
+
+        if user_to_delete_id == user.id:
+            raise CantDeleteSelfException
+        user = await User.find_one_or_fail(filter=User.id == user_to_delete_id)
+
+        avatar = user.avatar
+
+        if avatar:
+            os.remove(avatar)
+
+        await User.delete(User.id == user_id)
+
+    @staticmethod
+    async def update_current_user(user, data):
+        return await User.update(record_id=user.id, **data)
+
+    @staticmethod
+    async def update_current_user_avatar(user, avatar):
+        user = await User.find_one_or_fail(filter=User.id == user.id)
+
+        old_avatar = user.avatar
+
+        if old_avatar:
+            os.remove(old_avatar)
+
+        validate_avatar_file(avatar)
+
+        path = f"{UserService.AVATAR_MEDIA_FOLDER}/{token_hex(16)}.webp"
+
+        os.makedirs(UserService.AVATAR_MEDIA_FOLDER, exist_ok=True)
+
+        webp_image = await convert_image_to_webp(avatar.file)
+
+        with open(path, 'wb') as file_writer:
+
+            shutil.copyfileobj(webp_image, file_writer)
+
+        return await User.update(record_id=user.id, avatar=path)
+
+
+
+
+

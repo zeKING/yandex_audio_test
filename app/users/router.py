@@ -3,12 +3,13 @@ from datetime import datetime, timedelta, timezone
 from starlette.requests import Request
 
 from app.config import settings
+from app.repository.tools import get_list_data
 from app.users.exceptions import TokenAbsentException
 from app.users.auth_service import AuthService
-from app.users.dependencies import get_current_user
+from app.users.dependencies import get_current_user, is_admin
 from app.users.models import User
-from app.users.schemas import SLogin, SUserToken, SCurrentUser
-from fastapi import APIRouter, Response, Depends
+from app.users.schemas import SLogin, SUserToken, SCurrentUser, SUpdateCurrentUser, SUserList
+from fastapi import APIRouter, Response, Depends, UploadFile, File
 
 from app.users.services import YandexAuthService, UserService
 
@@ -26,6 +27,7 @@ async def login():
     # force_confirm, чтоб каждый раз окно входа выходило
 
     return {'auth_url': auth_url}
+
 
 @router.get("/verify-code", response_model=SUserToken)
 async def verify_code(code: str, response: Response):
@@ -57,8 +59,6 @@ async def refresh_access_token(request: Request, response: Response):
     response.set_cookie('access_token', access_token,
                         expires=datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
 
-
-
     return {"access_token": access_token}
 
 
@@ -73,6 +73,24 @@ async def current_user(user: User = Depends(get_current_user)):
     return user
 
 
+@router.get("/list", response_model=SUserList)
+@is_admin()
+async def get_users_list(page: int = 1, limit: int = 10, user: User = Depends(get_current_user)):
+    return await get_list_data(User, page, limit)
 
 
+@router.delete("/{user_id}", responses={204: {}})
+@is_admin()
+async def delete_user(user_id: str, user: User = Depends(get_current_user)):
+    await UserService.delete_user(user_to_delete_id=user_id, user=user)
 
+
+@router.put('/current-user', response_model=SCurrentUser)
+async def update_current_user(data: SUpdateCurrentUser, user: User = Depends(get_current_user)):
+
+    return await UserService.update_current_user(user=user, data=data.dict())
+
+
+@router.put('/current-user/avatar')
+async def update_current_user_avatar(avatar: UploadFile = File(), user: User = Depends(get_current_user)):
+    return await UserService.update_current_user_avatar(user=user, avatar=avatar)

@@ -33,3 +33,12 @@ YandexAPIError = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST, detail="Ошибка запроса в Яндекс"
 )
 
+InvalidAvatarFileExtensionException = HTTPException(
+    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    detail="Неверное расширение файла. Расширение должно быть .jpg, .jpeg, .png, .jfif, .webp"
+)
+
+CantDeleteSelfException = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="Нельзя удалить себя"
+)

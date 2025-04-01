@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import UploadFile
 from pydantic import BaseModel
 
-
+from app.repository.schemas import SBaseListResponse
 
 
 # class SUUser(BaseModel):
@@ -14,7 +14,7 @@ from pydantic import BaseModel
 
 
 class SCurrentUser(BaseModel):
-    id: int
+    id: str
     email: str
     login: str
 
@@ -25,7 +25,7 @@ class SCurrentUser(BaseModel):
     gender: str | None
     phone: str | None
 
-    last_login: datetime.datetime | None
+    last_login: datetime.date | None
     created_at: datetime.datetime
     is_active: bool
     is_superuser: bool
@@ -34,15 +34,26 @@ class SCurrentUser(BaseModel):
         from_attributes = True
 
 
-
 class SUser(BaseModel):
-    id: int
+    id: str
     email: str
     avatar: Optional[str]
     avatar_id: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
-    patronymic: Optional[str]
+    phone: Optional[str]
+    last_login: datetime.date | None
+    created_at: datetime.datetime
+
+class SUserList(SBaseListResponse):
+    data: List[SUser]
+
+
+class SUpdateCurrentUser(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    phone: Optional[str]
+    gender: Optional[str]
 
 
 class SUserToken(BaseModel):

@@ -33,7 +33,6 @@ class YandexAuthService:
 
     @staticmethod
     async def get_user_data(yandex_access_token) -> dict:
-        print(yandex_access_token)
         headers = {
             'Authorization': f"OAuth {yandex_access_token}"
         }
@@ -47,6 +46,7 @@ class YandexAuthService:
 
 class UserService:
     AVATAR_MEDIA_FOLDER = 'media/users/avatars'
+
     @staticmethod
     async def save_user_data(user_data):
 

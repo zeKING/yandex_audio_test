@@ -16,7 +16,7 @@ from app.repository.schemas import SBaseListResponse
 class SCurrentUser(BaseModel):
     id: str
     email: str
-    login: str
+    login: str | None
 
     avatar_id: str | None
     avatar: str | None
